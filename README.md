@@ -271,3 +271,15 @@ export AWS_SECRET_ACCESS_KEY=&lt;your-aws-secret-access-key&gt;</li>
 </ul>
 <div align="right"><a href="#readme-top">↑ Back to Top</a></div>
 
+[contributors-shield]: https://img.shields.io/github/contributors/ShenLoong99/aws-terraform-polly-text-to-speech.svg?style=for-the-badge
+[contributors-url]: https://github.com/ShenLoong99/aws-terraform-polly-text-to-speech/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/ShenLoong99/aws-terraform-polly-text-to-speech.svg?style=for-the-badge
+[forks-url]: https://github.com/ShenLoong99/aws-terraform-polly-text-to-speech/network/members
+[stars-shield]: https://img.shields.io/github/stars/ShenLoong99/aws-terraform-polly-text-to-speech.svg?style=for-the-badge
+[stars-url]: https://github.com/ShenLoong99/aws-terraform-polly-text-to-speech/stargazers
+[issues-shield]: https://img.shields.io/github/issues/ShenLoong99/aws-terraform-polly-text-to-speech.svg?style=for-the-badge
+[issues-url]: https://github.com/ShenLoong99/aws-terraform-polly-text-to-speech/issues
+[license-shield]: https://img.shields.io/github/license/ShenLoong99/aws-terraform-polly-text-to-speech.svg?style=for-the-badge
+[license-url]: https://github.com/ShenLoong99/aws-terraform-polly-text-to-speech/blob/master/LICENSE.txt
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/si-kai-tan
