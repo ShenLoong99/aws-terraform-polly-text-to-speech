@@ -6,7 +6,7 @@ terraform {
     organization = "my-terraform-aws-projects-2025"
 
     workspaces {
-      name = "AWS-Image-Labels-Generator"
+      name = "AWS-polly-text-to-speech"
     }
   }
 
