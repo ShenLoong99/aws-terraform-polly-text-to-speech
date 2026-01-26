@@ -1,0 +1,98 @@
+name: "Production Deployment"
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "**.tf"
+      - "lambda/**"
+      - "scripts/**"
+      - ".github/workflows/cd.yml"
+  workflow_dispatch:
+
+jobs:
+  # Detect what changed to optimize the run
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      infra: ${{ steps.filter.outputs.infra }}
+      app: ${{ steps.filter.outputs.app }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            infra:
+              - '**.tf'
+              - 'lambda/**'
+            app:
+              - 'website-files/**'
+              - '.github/workflows/cd.yml'
+
+  # Infrastructure Job (Terraform)
+  terraform:
+    needs: changes
+    # Only run if .tf files or lambda code changed
+    if: needs.changes.outputs.infra == 'true'
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+  # Deployment & Test
+  deploy:
+    needs: [changes, terraform]
+    # Run if the infra job finished successfully
+    if: |
+      always() &&
+      (needs.changes.outputs.app == 'true' || needs.terraform.result == 'success')
+    runs-on: ubuntu-latest
+    environment: prod
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Set Environment Variables
+        run: |
+          INPUT_BUCKET=$(terraform output -raw input_bucket_name)
+          OUTPUT_BUCKET=$(terraform output -raw output_bucket_name)
+          echo "AWS_REGION=$(terraform output -raw aws_region)" >> $GITHUB_ENV
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::871308866502:role/GitHubActionRole
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Run Polly Pipeline Integration Test
+        run: |
+          chmod +x scripts/test-polly.sh
+          ./scripts/test-polly.sh
+        env:
+          INPUT_BUCKET: ${{ env.INPUT_BUCKET }}
+          OUTPUT_BUCKET: ${{ env.OUTPUT_BUCKET }}
