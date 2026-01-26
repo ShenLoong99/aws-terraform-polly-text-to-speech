@@ -191,6 +191,7 @@ This section is automatically updated with the latest infrastructure details.
 
 | Name                                                                                            | Description                          |
 | ----------------------------------------------------------------------------------------------- | ------------------------------------ |
+| <a name="output_aws_region"></a> [aws_region](#output_aws_region)                               | AWS region to deploy resources       |
 | <a name="output_input_bucket_name"></a> [input_bucket_name](#output_input_bucket_name)          | S3 bucket for uploading text files   |
 | <a name="output_lambda_function_name"></a> [lambda_function_name](#output_lambda_function_name) | Text-to-Speech Lambda function       |
 | <a name="output_output_bucket_name"></a> [output_bucket_name](#output_output_bucket_name)       | S3 bucket where MP3 files are stored |
