@@ -92,8 +92,8 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          INPUT_BUCKET=$(terraform output -raw input_bucket_name)
-          OUTPUT_BUCKET=$(terraform output -raw output_bucket_name)
+          echo "INPUT_BUCKET=$(terraform output -raw input_bucket_name)" >> $GITHUB_ENV
+          echo "OUTPUT_BUCKET=$(terraform output -raw output_bucket_name)" >> $GITHUB_ENV
           echo "AWS_REGION=$(terraform output -raw aws_region)" >> $GITHUB_ENV
 
       - name: Configure AWS Credentials
