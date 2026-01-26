@@ -12,3 +12,8 @@ output "lambda_function_name" {
   description = "Text-to-Speech Lambda function"
   value       = module.lambda.lambda_function_name
 }
+
+output "aws_region" {
+  description = "AWS region to deploy resources"
+  value       = var.aws_region
+}
