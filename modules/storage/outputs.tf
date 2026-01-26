@@ -8,7 +8,12 @@ output "output_bucket_name" {
   value       = aws_s3_bucket.output_bucket.bucket
 }
 
-output "lambda_function_name" {
-  description = "Text-to-Speech Lambda function"
-  value       = aws_lambda_function.polly_lambda.function_name
+output "input_bucket_arn" {
+  description = "ARN of S3 input bucket"
+  value       = aws_s3_bucket.input_bucket.arn
+}
+
+output "output_bucket_arn" {
+  description = "ARN of S3 output bucket"
+  value       = aws_s3_bucket.output_bucket.arn
 }
