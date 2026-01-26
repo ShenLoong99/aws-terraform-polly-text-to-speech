@@ -51,9 +51,10 @@ resource "aws_iam_policy" "lambda_policy" {
       },
       # Polly Permission
       {
-        Effect   = "Allow"
-        Action   = "polly:SynthesizeSpeech"
-        Resource = "*"
+        Effect = "Allow"
+        Action = "polly:SynthesizeSpeech"
+        # checkov:skip=CKV_AWS_355: Polly is global service without specific resource ARNs
+        Resource = "*" # Polly is a global service and often requires "*"
       },
       # Cloudwatch Logs Permission
       {

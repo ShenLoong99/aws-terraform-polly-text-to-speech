@@ -59,6 +59,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "input_lifecycle" {
       days = 30
     }
 
+    # Abort failed uploads after 7 days to save money
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
     # Example 2: If you enabled versioning, delete non-current versions after 7 days
     noncurrent_version_expiration {
       noncurrent_days = 7
@@ -85,6 +90,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "output_lifecycle" {
       days = 30
     }
 
+    # Abort failed uploads after 7 days to save money
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
     # Example 2: If you enabled versioning, delete non-current versions after 7 days
     noncurrent_version_expiration {
       noncurrent_days = 7
@@ -97,4 +107,24 @@ resource "aws_s3_bucket_versioning" "versioning_output_bucket" {
   versioning_configuration {
     status = "Enabled"
   }
+}
+
+# Block all public access to the bucket
+resource "aws_s3_bucket_public_access_block" "input_bucket_access" {
+  bucket = aws_s3_bucket.input_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# Block all public access to the bucket
+resource "aws_s3_bucket_public_access_block" "output_bucket_access" {
+  bucket = aws_s3_bucket.output_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
