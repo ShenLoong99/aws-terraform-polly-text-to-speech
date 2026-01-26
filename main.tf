@@ -27,7 +27,7 @@ module "iam" {
   default_tags         = local.common_tags
 }
 
-# Module for Lambda
+# Module for Polly Lambda
 module "lambda" {
   source             = "./modules/lambda"
   lambda_role_arn    = module.iam.lambda_role_arn
