@@ -28,3 +28,12 @@ resource "aws_lambda_function" "polly_lambda" {
     }
   }
 }
+
+# Permission for S3 to invoke Lambda
+resource "aws_lambda_permission" "s3_permission" {
+  statement_id  = "AllowS3Invoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.polly_lambda.function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = var.input_bucket_arn
+}
