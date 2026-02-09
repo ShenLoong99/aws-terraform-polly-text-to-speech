@@ -8,12 +8,22 @@ output "output_bucket_name" {
   value       = aws_s3_bucket.output_bucket.bucket
 }
 
-output "input_bucket_arn" {
-  description = "ARN of S3 input bucket"
-  value       = aws_s3_bucket.input_bucket.arn
+output "lambda_role_arn" {
+  description = "ARN of lambda role"
+  value       = aws_iam_role.lambda_role.arn
 }
 
-output "output_bucket_arn" {
-  description = "ARN of S3 output bucket"
-  value       = aws_s3_bucket.output_bucket.arn
+output "lambda_role_id" {
+  description = "ID of lambda role"
+  value       = aws_iam_role.lambda_role.id
+}
+
+output "input_bucket_id" {
+  description = "ID of the input S3 bucket"
+  value       = aws_s3_bucket.input_bucket.id
+}
+
+output "input_bucket_arn" {
+  description = "ARN of the input S3 bucket"
+  value       = aws_s3_bucket.input_bucket.arn
 }

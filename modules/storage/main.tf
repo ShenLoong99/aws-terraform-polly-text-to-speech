@@ -1,3 +1,6 @@
+# Data to retrieve current account details
+data "aws_caller_identity" "current" {}
+
 # Create S3 Buckets (Input & Output)
 resource "aws_s3_bucket" "input_bucket" {
   bucket        = "polly-input-bucket-${random_id.suffix.hex}"
@@ -11,18 +14,6 @@ resource "aws_s3_bucket" "output_bucket" {
 
 resource "random_id" "suffix" {
   byte_length = 4
-}
-
-# S3 Notification
-resource "aws_s3_bucket_notification" "s3_trigger" {
-  bucket = aws_s3_bucket.input_bucket.id
-
-  lambda_function {
-    lambda_function_arn = var.polly_lambda_arn
-    events              = ["s3:ObjectCreated:*"]
-  }
-
-  depends_on = [var.s3_lambda_permission_id]
 }
 
 # Enable S3 Server-Side Encryption
@@ -127,4 +118,79 @@ resource "aws_s3_bucket_public_access_block" "output_bucket_access" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+# IAM Policy
+resource "aws_iam_policy" "lambda_policy" {
+  name = "polly-lambda-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      # GetObject from input bucket (no encryption required)
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject"
+        ]
+        Resource = [
+          "${aws_s3_bucket.input_bucket.arn}/*"
+        ]
+      },
+      # PutObject to output bucket (encryption required)
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject"
+        ]
+        Resource = [
+          "${aws_s3_bucket.output_bucket.arn}/*"
+        ]
+        Condition = {
+          StringEquals = {
+            "s3:x-amz-server-side-encryption" : "AES256"
+          }
+        }
+      },
+      # Polly Permission
+      {
+        Effect = "Allow"
+        Action = "polly:SynthesizeSpeech"
+        # checkov:skip=CKV_AWS_355: Polly is global service without specific resource ARNs
+        Resource = "*" # Polly is a global service and often requires "*"
+      },
+      # Cloudwatch Logs Permission
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.lambda_function_name}:*"
+      }
+    ]
+  })
+}
+
+# IAM Role for Lambda
+resource "aws_iam_role" "lambda_role" {
+  name = "polly-lambda-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      }
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+# Attach Policy
+resource "aws_iam_role_policy_attachment" "attach" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_policy.arn
 }
