@@ -13,6 +13,11 @@ output "lambda_role_arn" {
   value       = aws_iam_role.lambda_role.arn
 }
 
+output "lambda_role_id" {
+  description = "ID of lambda role"
+  value       = aws_iam_role.lambda_role.id
+}
+
 output "input_bucket_id" {
   description = "ID of the input S3 bucket"
   value       = aws_s3_bucket.input_bucket.id

@@ -11,6 +11,7 @@ module "lambda" {
   lambda_role_arn    = module.storage.lambda_role_arn
   output_bucket_name = module.storage.output_bucket_name
   input_bucket_arn   = module.storage.input_bucket_arn
+  lambda_role_id     = module.storage.lambda_role_id
 }
 
 # CloudWatch Log Group for Lambda
